@@ -2,10 +2,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../view/home.vue'
 import ViewTodo from '../view/viewTodo.vue' 
+import Start from '../view/start.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
     component: Home,
   },
@@ -14,6 +15,11 @@ const routes = [
     name: 'todoDetail',
     component: ViewTodo,
   },
+  {
+    path: '/',
+    name: 'start',
+    component: Start,
+  }
 ]
 
 const router = createRouter({
