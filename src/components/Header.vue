@@ -1,7 +1,7 @@
 <script setup>
 import Button from "./buttons/buttonsComponent.vue";
-const user_name = 'John Doe';
 
+const name = localStorage.getItem("name");
 </script>
 
 <template>
@@ -11,7 +11,7 @@ const user_name = 'John Doe';
   <nav>
     <ul class="flex items-center gap-4">
       <li><a href="#">Home</a></li>
-      <li><Button :name="user_name"></Button></li>
+      <li><Button :name="name"></Button></li>
     </ul>
   </nav>
 </header>
