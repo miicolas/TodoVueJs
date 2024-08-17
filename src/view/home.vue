@@ -44,17 +44,20 @@ const addCategory = () => {
 };
 
 const addTodo = () => {
-  if (input_content.value) {
+  if (input_content.value && input_category.value) {
     todos.value.push({
       id: Math.random().toString(36).substring(2, 15),
       content: input_content.value,
       description: input_description.value,
-      createAt: new Date().toLocaleString(),
+      createAt: new Date().toLocaleString().slice(0, 10),
       category: input_category.value,
       done: false,
     });
     input_content.value = "";
     input_description.value = "";
+  }
+  else {
+    alert("Please fill in all the fields");
   }
 };
 
@@ -122,7 +125,7 @@ watch(
     </section>
     <section class="my-4">
       <h4>Todos</h4>
-      <ul>
+      <div class="grid grid-cols-1 sm:grid-cols-2 w-full gap-4">
         <li
           v-for="todo in sort_todo"
           :key="todo.id"
@@ -150,7 +153,7 @@ watch(
             </button>
           </div>
         </li>
-      </ul>
+      </div>
     </section>
   </main>
 </template>
