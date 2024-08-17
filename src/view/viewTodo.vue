@@ -11,30 +11,48 @@ const getLocalStorage = localStorage.getItem("todos");
 const todos = JSON.parse(getLocalStorage);
 const data_todo = ref({});
 
-
 todos.forEach((todo) => {
   if (todo.id === id_todo.value) {
     data_todo.value = todo;
   }
 });
+
+const editTodo = () => {
+  router.push({ name: "editTodo", params: { id: id_todo.value } });
+};
+
+const deleteTodo = () => {
+  const todosList = JSON.parse(localStorage.getItem("todos"));
+  console.log(todosList);
+  todosList.forEach((todo, index) => {
+    if (todo.id === id_todo.value) {
+      todosList.splice(index, 1);
+    }
+  });
+  localStorage.setItem("todos", JSON.stringify(todosList));
+  router.push({ path: "/home" });
+  
+};
 </script>
 
 <template>
   <Header />
   <main>
-    <button @click="$router.go(-1)">Go back</button>
+    <button
+      @click="$router.go(-1)"
+      class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+    >
+      Go back
+    </button>
     <div>
-      <h1>Todo Detail</h1>
-      <p>ID: {{ id_todo }}</p>
-      <p>Content: {{ data_todo.content }}</p>
-      <p>Description: {{ data_todo.description }}</p>
-      <p>Done: {{ data_todo.done }}</p>
-      <p>Category: {{ data_todo.category }}</p>
-
-      
-
+      <h1 class="text-3xl font-bold">Todo Detail</h1>
+      <p class="text-slate-500">ID: {{ id_todo }}</p>
+      <p class="text-slate-500">Content: {{ data_todo.content }}</p>
+      <p class="text-slate-500">Description: {{ data_todo.description }}</p>
+      <p class="text-slate-500">Done: {{ data_todo.done }}</p>
+      <p class="text-slate-500">Category: {{ data_todo.category }}</p>
     </div>
+    <button @click="editTodo" class="bg-gray-500 text-white px-4 py-2 rounded-lg">Edit</button>
+    <button @click="deleteTodo" class="bg-red-500 text-white px-4 py-2 rounded-lg">Delete</button>
   </main>
 </template>
-
-
