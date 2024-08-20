@@ -2,42 +2,49 @@
 import { ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import Header from "../components/Header.vue";
+import ListCategories from "../components/listCategories.vue";
 
 const router = useRouter();
 const todos = ref([]);
+const categories = ref([]);
 
-const categories = ref([
-  { id: 1, name: "Personal" },
-  { id: 2, name: "Work" },
-]);
 
-localStorage.setItem("categories", JSON.stringify(categories.value));
+const getCategories = localStorage.getItem("categories");
+if (getCategories) {
+  categories.value = JSON.parse(getCategories);
+} else {
+  categories.value = [
+    { id: 1, name: "Personal" },
+    { id: 2, name: "Work" },
+  ];
+}
 
 todos.value = JSON.parse(localStorage.getItem("todos")) || [];
 
 const name = localStorage.getItem("name");
-
 if (!name) {
   router.push({ path: "/" });
 }
 
 const sort_todo = computed(() =>
-  todos.value.sort((a, b) => {
-    return a.todos - b.todos;
-  })
+  todos.value.sort((a, b) => a.createAt.localeCompare(b.createAt))
 );
 
 const input_content = ref("");
 const input_description = ref("");
 const input_add_category = ref("");
+const input_add_category_color = ref("");
 const input_category = ref("");
+
 
 const addCategory = () => {
   if (input_add_category.value) {
     categories.value.push({
       id: Math.random().toString(36).substring(2, 15),
       name: input_add_category.value,
+      color: input_add_category_color.value,
     });
+
     localStorage.setItem("categories", JSON.stringify(categories.value));
     input_add_category.value = "";
   }
@@ -55,20 +62,14 @@ const addTodo = () => {
     });
     input_content.value = "";
     input_description.value = "";
-  }
-  else {
+    input_category.value = "";
+  } else {
     alert("Please fill in all the fields");
   }
 };
 
-/* const deleteTodo = (todo) => {
-  todos.value = todos.value.filter((item) => item.id !== todo.id);
-  localStorage.setItem("todos", JSON.stringify(todos.value));
-};
 
-const editTodo = (todo) => {
-  router.push({ path: `/todos/edit/${todo.id}` });
-}; */
+console.log(categories.value, 'categories');
 
 const viewTodo = (todo) => {
   router.push({ name: "todoDetail", params: { id: todo.id } });
@@ -98,15 +99,40 @@ watch(
               class="bg-slate-100 text-slate-900 px-4 py-2 rounded-lg border-2 border-slate-300 focus:outline-none focus:border-blue-500 hover:bg-slate-200 transition-all duration-300"
             />
             <div class="flex items-center gap-4">
-              <select v-model="input_category">
-                <option disabled value="">Please select one category</option>
-                <option v-for="category in categories" :key="category.id">
+              <select
+                v-model="input_category"
+                class="bg-slate-100 text-slate-900 px-4 py-2 rounded-lg border-2 border-slate-300 focus:outline-none focus:border-blue-500 hover:bg-slate-200 transition-all duration-300"
+              >
+                <option
+                  disabled
+                  value=""
+                  class="bg-slate-100 text-slate-900 px-4 py-2 rounded-lg border-2 border-slate-300 focus:outline-none focus:border-blue-500 hover:bg-slate-200 transition-all duration-300"
+                >
+                  Please select one category
+                </option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.name"
+                  class="bg-slate-100 text-slate-900 px-4 py-2 rounded-lg border-2 border-slate-300 focus:outline-none focus:border-blue-500 hover:bg-slate-200 transition-all duration-300"
+                >
                   {{ category.name }}
                 </option>
               </select>
-              <div>
-                <input type="text" placeholder="Add Category" v-model="input_add_category"/>
-                <button @click="addCategory">Add</button>
+              <div class="flex items-center gap-4">
+                <input
+                  type="text"
+                  placeholder="Add Category"
+                  v-model="input_add_category"
+                  class="bg-slate-100 text-slate-900 px-4 py-2 rounded-lg border-2 border-slate-300 focus:outline-none focus:border-blue-500 hover:bg-slate-200 transition-all duration-300"
+                />
+                <button
+                  @click.stop="addCategory"
+                  type="button"
+                  class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                >
+                  Add
+                </button>
               </div>
             </div>
             <textarea
@@ -117,7 +143,7 @@ watch(
           </div>
           <input
             type="submit"
-            value="add Todo"
+            value="Add Todo"
             class="bg-slate-600 border-2 border-slate-300 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 hover:bg-slate-700 transition-all duration-300"
           />
         </div>
@@ -135,7 +161,7 @@ watch(
             <input
               type="checkbox"
               v-model="todo.done"
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <input
               type="text"
@@ -154,6 +180,10 @@ watch(
           </div>
         </li>
       </div>
+    </section>
+    <section class="my-4">
+      <h4>Categories</h4>
+      <ListCategories />
     </section>
   </main>
 </template>
